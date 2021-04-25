@@ -11,3 +11,4 @@ http://127.0.0.1:8000/
 詳しくは
 https://docs.google.com/presentation/d/1dzd_sVlmfwJ5V1uxA2Y9vKsMvSCgrTxYMvrivJ_Jy44/edit?usp=sharing
 に載せてます！
+DOIがない論文に関しては対応してないですorz...
