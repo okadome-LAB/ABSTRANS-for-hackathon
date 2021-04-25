@@ -1,0 +1,33 @@
+{% block content %}
+<!-- responseの表示　-->
+{% for paper in data %}
+<div class="container-lg">
+    doi: <a href="{% url 'abstrans' paper.doi %}">{{ paper.doi }}</a><br>
+    <!-- タイトル　-->
+    <span class="sample12">{{ paper.title_en }}</span><br>
+    {{ paper.title_ja }}<br>
+
+    <!-- 著者　-->
+    Authors:
+    {% for author in paper.authors %}
+    {{ author.name }}
+    {% endfor %}
+    <br>
+    Published: {{ paper.year }}
+    <br>
+
+    <p></p>
+    <!-- アブスト　-->
+    <span class="sample11">abstract</span><br>
+    {{ paper.abst_en }}
+    <p></p>
+    <span class="sample11">translated by google翻訳</span><br>
+    {{ paper.abst_ja }}<br>
+    <p></p>
+    <a class="btn btn-primary" href={{ paper.abst_deepl }} role="button">DeepLで翻訳</a>
+    <a class="btn btn-primary" href={{ paper.url }} role="button">Semantic Scholarで開く</a>
+    <p></p>
+    <hr class="my-4">
+</div>
+{% endfor %}
+{% endblock content %}

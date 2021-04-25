@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+<!-- CSSスタイルシートの読み込み　-->
+{% load static %}
+{% block customcss %}
+<!-- Custom styles for this template -->
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/ajax.js' %}"></script>
+<script src="{% static 'js/onload.js' %}"></script>
+<link href="{% static 'style.css' %}" rel="stylesheet">
+{% endblock customcss %}
+
+<!-- for ajax -->
+
+
+{% block header %}
+<div class="bg-light p-3 p-sm-5 mb-4 border-top">
+    <div class="container">
+        <h1 class="display-4">ABSTRANS</h1>
+        <p class="lead">翻訳結果を表示しています</p>
+        <hr class="my-4">
+
+        <!-- doi検索フォーム　-->
+        <form action="{% url 'search' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+            <div class="form-group row">
+                <div class="col-sm-５">
+                    <input type="text" class="form-control sbc_field" name="doi" placeholder="DOIかURLを入れてEnter！！" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock header %}
+
+{% block content %}
+
+<!-- responseの表示　-->
+{% for paper in papers %}
+<div class="container-lg">
+    doi: <a href="{% url 'abstrans' paper.doi %}">{{ paper.doi }}</a><br>
+    <!-- タイトル　-->
+    <span class="sample12">{{ paper.title_en }}</span><br>
+    {{ paper.title_ja }}<br>
+
+    <!-- 著者 -->
+    Authors:
+    {% for author in paper.authors %}
+    {{ author.name }}
+    {% endfor %}
+    <br>
+    Published: {{ paper.year }}
+    <br>
+
+    <p></p>
+    <!-- アブスト -->
+    <span class="sample11">abstract</span><br>
+    {{ paper.abst_en }}
+    <p></p>
+    <span class="sample11">translated by google翻訳</span><br>
+    {{ paper.abst_ja }}<br>
+    <p></p>
+    <a class="btn btn-primary" href={{ paper.abst_deepl }} role="button">DeepLで翻訳</a>
+    <a class="btn btn-primary" href={{ paper.url }} role="button">Semantic Scholarで開く</a>
+    <p></p>
+    <hr class="my-4">
+</div>
+{% endfor %}
+
+
+<button id="next" value={{ doi }} class="fixed_btn">次の5件を翻訳</button>
+<div id="POST"></div>
+<div id="comment_area">
+    {% include "next.html" %}
+</div>
+<script>
+    $('#next').on('click', function () {
+        $('#POST').text('通信中...');
+        var test_value = $('#next').val();
+        // Ajax通信を開始
+        $.ajax({
+            url: "{% url 'exec' %}",
+            method: "POST",
+            // プレーンテキストを受信（他にはhtml、xml、script、json、jsonp等）
+            dataType: 'text',
+            // リクエストパラメータ「?param1=いろはに&param2=ほへと&param3=ちりぬるを」
+            data: {
+                param1: test_value,
+            },
+            timeout: 10000,
+        })
+            .done(function (data) {
+                $("#comment_area").html(data);
+                $('#POST').text('');
+            }).fail(function (xhr, status, error) {
+                console.log(status + ":" + error);
+            });
+    })
+</script>
+{% endblock content %}
